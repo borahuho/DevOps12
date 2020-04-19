@@ -1,16 +1,27 @@
-##### add following lines #####
+global
+    log 127.0.0.1 local0 notice
+    user haproxy
+    group haproxy
 
-frontend Local_Server
-        bind 192.168.10.60:80
-        mode http
-        default_backend My_Web_Servers
+defaults
+    log global
+    retries 2
+    timeout connect 3000
+    timeout server 5000
+    timeout client 5000
 
-backend My_Web_Servers
-        mode http
-        balance roundrobin
-        option forwardfor
-        http-request set-header X-Forwarded-Port %[dst_port]
-        http-request add-header X-Forwarded-proto https if { ssl_fc }
-        option httpchk HEAD / HTTP/1.1rnHost:localhost
-        server web01.local 192.168.10.40:80
-        server web02.local 192.168.10.50:80
+listen mysql-cluster
+    bind 192.168.10.90:3306
+    mode tcp
+    option mysql-check user haproxy_check
+    balance roundrobin
+    server mysql1 192.168.10.70:3306 check
+    server mysql2 192.168.10.80:3306 check
+
+listen 0.0.0.0:8080
+    mode http
+    stats enable
+    stats uri /
+    stats realm Strictly\ Private
+    stats auth A_Username:YourPassword
+    stats auth Another_User:passwd
