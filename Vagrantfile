@@ -22,7 +22,7 @@ Vagrant.configure('2') do |config|
 	
     config.vm.define "mysql1" do |machine1|
         machine1.vm.host_name = "mysql1.local"
-		machine1.vm.synced_folder "./data/mysql1", "/var/lib/mysql_vagrant" , id: "mysql",
+		machine1.vm.synced_folder "./data/mysql1", "/var/lib/mysql" , id: "mysql",
 		owner: 108, group: 113,  # owner: "mysql", group: "mysql",
 		mount_options: ["dmode=775,fmode=664"]
         machine1.vm.network "private_network", ip: "192.168.10.70"
@@ -36,7 +36,7 @@ Vagrant.configure('2') do |config|
 
     config.vm.define "mysql2" do |machine2|
         machine2.vm.host_name = "mysql2.local"
-		machine2.vm.synced_folder "./data/mysql2", "/var/lib/mysql_vagrant" , id: "mysql",
+		machine2.vm.synced_folder "./data/mysql2", "/var/lib/mysql" , id: "mysql",
 		owner: 108, group: 113,  # owner: "mysql", group: "mysql",
 		mount_options: ["dmode=775,fmode=664"]
         machine2.vm.network "private_network", ip: "192.168.10.80"
