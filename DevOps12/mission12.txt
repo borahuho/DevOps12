@@ -8,10 +8,132 @@ MySQL master nodes and HAproxy
 
 Install and configure MySQL on the 2 master nodes and HAproxy on the proxyserver. You can use the steps below. Config file for HAproxy is added in this directory.
 
- 
+sudo apt-get install mysql-server mysql-client -y
+
+sudo mysql_secure_installation
+
+sudo nano /etc/mysql/my.cnf
+
+[mysqld]
+server_id           = 1
+log_bin             = /var/log/mysql/mysql-bin.log
+log_bin_index       = /var/log/mysql/mysql-bin.log.index
+relay_log           = /var/log/mysql/mysql-relay-bin
+relay_log_index     = /var/log/mysql/mysql-relay-bin.index
+expire_logs_days    = 10
+max_binlog_size     = 100M
+log_slave_updates   = 1
+auto-increment-increment = 2
+auto-increment-offset = 1
+bind-address        = 192.168.10.70
+
+
+[mysqld]
+server_id           = 2
+log_bin             = /var/log/mysql/mysql-bin.log
+log_bin_index       = /var/log/mysql/mysql-bin.log.index
+relay_log           = /var/log/mysql/mysql-relay-bin
+relay_log_index     = /var/log/mysql/mysql-relay-bin.index
+expire_logs_days    = 10
+max_binlog_size     = 100M
+log_slave_updates   = 1
+auto-increment-increment = 2
+auto-increment-offset = 2
+bind-address        = 192.168.10.80
+
+sudo systemctl restart mysql
+
+sudo mysql -u root -p
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.10.70' IDENTIFIED BY 'Password01!';
+
+GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.10.80' IDENTIFIED BY 'Password01!';
+
+TEST###### 
+mysql -u repl_user -p -h 192.168.10.80 -P 3306
+
+SHOW MASTER STATUS;
+
+STOP SLAVE;
+CHANGE MASTER TO master_host='192.168.10.70', master_port=3306, master_user='repl_user', master_password='Password01!', master_log_file='mysql-bin.000001', master_log_pos=459;
+START SLAVE;
+
+SHOW MASTER STATUS;
+
+STOP SLAVE;
+CHANGE MASTER TO master_host='192.168.10.80', master_port=3306, master_user='repl_user', master_password='Password01!', master_log_file='mysql-bin.000001', master_log_pos=459;
+START SLAVE;
+
+create database test;
+create table test.flowers (`id` varchar(10));
+
+show tables in test;
+
+#### server 1 ##### auto gerepliceerd naar server 2 #####
+
+INSERT INTO mysql.user (Host,User,ssl_cipher,x509_issuer,x509_subject) values ('192.168.10.90','haproxy_check','','','');
+FLUSH PRIVILEGES;
+
+GRANT ALL PRIVILEGES ON *.* TO 'haproxy_root'@'192.168.10.90' IDENTIFIED BY 'Password01!' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
+
+vagrant ssh HAproxy2
+
+sudo apt-get install mysql-client -y
+
+mysql -h 192.168.10.70 -u haproxy_root -p -e "SHOW DATABASES"
+
+sudo apt update 
+sudo apt-get install haproxy -y
+
+sudo sed -i "s/ENABLED=0/ENABLED=1/" /etc/default/haproxy
+
+service haproxy
+
+sudo mv /etc/haproxy/haproxy.cfg{,.original}
+
+sudo nano /etc/haproxy/haproxy.cfg
+
+global
+    log 127.0.0.1 local0 notice
+    user haproxy
+    group haproxy
+
+defaults
+    log global
+    retries 2
+    timeout connect 3000
+    timeout server 5000
+    timeout client 5000
+
+listen mysql-cluster
+    bind 192.168.10.90:3306
+    mode tcp
+    option mysql-check user haproxy_check
+    balance roundrobin
+    server mysql1 192.168.10.70:3306 check
+    server mysql2 192.168.10.80:3306 check
+
+listen 0.0.0.0:8080
+    mode http
+    stats enable
+    stats uri /
+    stats realm Strictly\ Private
+    stats auth A_Username:YourPassword
+    stats auth Another_User:passwd
+
+sudo service haproxy start
+
+mysql -h 192.168.10.90 -u haproxy_root -p -e "SHOW DATABASES"
+
+mysql -h 192.168.10.90 -u haproxy_root -p -e "show variables like 'server_id'"
+
+mysql -h 192.168.10.90 -u haproxy_root -p -e "show variables like 'server_id'"
+
 
 ######################################
 
 write a configuration manual for HAproxy server with 2 MySQL master nodes.
+
 
 
