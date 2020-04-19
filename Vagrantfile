@@ -6,13 +6,13 @@ usermod -aG operators henk
 mkdir /operators
 chown henk /operators
 chgrp operators /operators
+mkdir /var/lib/mysql
 SCRIPT
 
 
 Vagrant.configure('2') do |config|
     
     # set default settings
-	config.vm.synced_folder ".", "/vagrant", mount_options: ["dmode=700,fmode=600"]
     config.vm.box = "ubuntu/bionic64"
     config.vm.provider "virtualbox" do |vb|
         vb.memory = 2048
