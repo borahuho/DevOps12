@@ -21,7 +21,6 @@ Vagrant.configure('2') do |config|
 	
     config.vm.define "mysql1" do |machine1|
         machine1.vm.host_name = "mysql1.local"
-		machine1.vm.synced_folder "data/mysql1", "/var/lib/mysql" 
         machine1.vm.network "private_network", ip: "192.168.10.70"
         machine1.vm.provision "shell", inline: $useraddscript
         machine1.vm.provider "virtualbox" do |vb|
@@ -33,7 +32,6 @@ Vagrant.configure('2') do |config|
 
     config.vm.define "mysql2" do |machine2|
         machine2.vm.host_name = "mysql2.local"
-		machine2.vm.synced_folder "data/mysql2", "/var/lib/mysql" 
         machine2.vm.network "private_network", ip: "192.168.10.80"
         machine2.vm.provision "shell", inline: $useraddscript
         machine2.vm.provider "virtualbox" do |vb|
