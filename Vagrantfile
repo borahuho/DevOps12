@@ -21,7 +21,7 @@ Vagrant.configure('2') do |config|
     end
 
 	# Set slave first
-    config.vm.define "mysqlslave", true do |machine1|
+    config.vm.define "mysqlslave" do |machine1|
         machine1.vm.host_name = "mysqlslave.local"
 		machine1.vm.synced_folder "./data/slave", "/var/lib/mysql_vagrant" , id: "mysql",
 		owner: 108, group: 113,  # owner: "mysql", group: "mysql",
@@ -36,7 +36,7 @@ Vagrant.configure('2') do |config|
 		machine1.vm.provision :shell, path: "bootstrap-slave.sh"
     end
 
-    config.vm.define "mysqlmaster", false do |machine2|
+    config.vm.define "mysqlmaster" do |machine2|
         machine2.vm.host_name = "mysqlmaster.local"
 		machine2.vm.synced_folder "./data/master", "/var/lib/mysql_vagrant" , id: "mysql",
 		owner: 108, group: 113,  # owner: "mysql", group: "mysql",
@@ -51,7 +51,7 @@ Vagrant.configure('2') do |config|
 		machine2.vm.provision :shell, path: "bootstrap-master.sh"
     end
 
-    config.vm.define "HAproxy2", primary: false do |machine3|
+    config.vm.define "HAproxy2" do |machine3|
         machine3.vm.host_name = "HAproxy2.local"
         machine3.vm.network "private_network", ip: "192.168.10.90"
         machine3.vm.provision "shell", inline: $useraddscript
