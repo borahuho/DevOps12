@@ -1,0 +1,17 @@
+
+
+
+
+MySQL master nodes and HAproxy
+
+######################################
+
+Install and configure MySQL on the 2 master nodes and HAproxy on the proxyserver. You can use the steps below. Config file for HAproxy is added in this directory.
+
+ 
+
+######################################
+
+write a configuration manual for HAproxy server with 2 MySQL master nodes.
+
+

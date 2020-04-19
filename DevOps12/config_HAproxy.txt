@@ -1,0 +1,16 @@
+##### add following lines #####
+
+frontend Local_Server
+        bind 192.168.10.60:80
+        mode http
+        default_backend My_Web_Servers
+
+backend My_Web_Servers
+        mode http
+        balance roundrobin
+        option forwardfor
+        http-request set-header X-Forwarded-Port %[dst_port]
+        http-request add-header X-Forwarded-proto https if { ssl_fc }
+        option httpchk HEAD / HTTP/1.1rnHost:localhost
+        server web01.local 192.168.10.40:80
+        server web02.local 192.168.10.50:80
