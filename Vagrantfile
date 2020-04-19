@@ -6,7 +6,6 @@ usermod -aG operators henk
 mkdir /operators
 chown henk /operators
 chgrp operators /operators
-mkdir /var/lib/mysql
 SCRIPT
 
 
