@@ -6,7 +6,7 @@ MySQL master nodes and HAproxy
 
 ######################################
 
-Install and configure MySQL on the 2 master nodes and HAproxy on the proxyserver. You can use the steps below. Config file for HAproxy is added in this directory.
+Install and configure MySQL on the 2 master nodes and then HAproxy on the proxyserver. You can use the steps below. Config file for HAproxy is added in this directory.
 
 sudo apt-get install mysql-server mysql-client -y
 
@@ -14,32 +14,7 @@ sudo mysql_secure_installation
 
 sudo nano /etc/mysql/my.cnf
 
-[mysqld]
-server_id           = 1
-log_bin             = /var/log/mysql/mysql-bin.log
-log_bin_index       = /var/log/mysql/mysql-bin.log.index
-relay_log           = /var/log/mysql/mysql-relay-bin
-relay_log_index     = /var/log/mysql/mysql-relay-bin.index
-expire_logs_days    = 10
-max_binlog_size     = 100M
-log_slave_updates   = 1
-auto-increment-increment = 2
-auto-increment-offset = 1
-bind-address        = 192.168.10.70
-
-
-[mysqld]
-server_id           = 2
-log_bin             = /var/log/mysql/mysql-bin.log
-log_bin_index       = /var/log/mysql/mysql-bin.log.index
-relay_log           = /var/log/mysql/mysql-relay-bin
-relay_log_index     = /var/log/mysql/mysql-relay-bin.index
-expire_logs_days    = 10
-max_binlog_size     = 100M
-log_slave_updates   = 1
-auto-increment-increment = 2
-auto-increment-offset = 2
-bind-address        = 192.168.10.80
+## Config in the mission directory ##
 
 sudo systemctl restart mysql
 
@@ -49,7 +24,8 @@ GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.10.70' IDENTIFIED BY 'Pas
 
 GRANT REPLICATION SLAVE ON *.* TO 'repl_user'@'192.168.10.80' IDENTIFIED BY 'Password01!';
 
-TEST###### 
+######TEST###### 
+
 mysql -u repl_user -p -h 192.168.10.80 -P 3306
 
 SHOW MASTER STATUS;
@@ -83,6 +59,8 @@ sudo apt-get install mysql-client -y
 
 mysql -h 192.168.10.70 -u haproxy_root -p -e "SHOW DATABASES"
 
+### on HAproxy server ###
+
 sudo apt update 
 sudo apt-get install haproxy -y
 
@@ -94,33 +72,7 @@ sudo mv /etc/haproxy/haproxy.cfg{,.original}
 
 sudo nano /etc/haproxy/haproxy.cfg
 
-global
-    log 127.0.0.1 local0 notice
-    user haproxy
-    group haproxy
-
-defaults
-    log global
-    retries 2
-    timeout connect 3000
-    timeout server 5000
-    timeout client 5000
-
-listen mysql-cluster
-    bind 192.168.10.90:3306
-    mode tcp
-    option mysql-check user haproxy_check
-    balance roundrobin
-    server mysql1 192.168.10.70:3306 check
-    server mysql2 192.168.10.80:3306 check
-
-listen 0.0.0.0:8080
-    mode http
-    stats enable
-    stats uri /
-    stats realm Strictly\ Private
-    stats auth A_Username:YourPassword
-    stats auth Another_User:passwd
+### config in mission directory ###
 
 sudo service haproxy start
 
