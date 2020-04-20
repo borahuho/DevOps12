@@ -1,7 +1,7 @@
 # DevOps12
 
 With this vagrant, you will install 3 Ubuntu 18.04 machines, 2x MySQL servers and 1 ubuntu server for HAproxy.
-It will add some default users, groups and directory's. First you have to set up the MySQL master nodes and then the HAproxy server.
+It will add some default users, groups and directory's. First you have to set up the MySQL master to master nodes and then the HAproxy server.
 This Vagrant is to practice with MySQL and HAproxy.
 This repository is intended for educational purpose only.
 
@@ -43,9 +43,9 @@ vagrant up
 vagrant ssh HAproxy
 ```
 ## Mission
-```
+
 Read your mission in ~/vagrant/mission (on HAproxy server)
-```
+
 ## Network
 Vagrant VM will be set up with 2 network adapters
 ```
