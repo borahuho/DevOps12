@@ -23,7 +23,7 @@ Youtube: https://youtu.be/KABnIuaA8SM
 
 ## Demo MySQL Master nodes and HAproxy
 
-Youtube: 
+Youtube: https://youtu.be/ceQhWAPsdD4
 
 
 ## Installation
